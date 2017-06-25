@@ -19,15 +19,15 @@ Function NugetInstall
 }
 
 [string] $CakeVersion       = "0.20.0"
-[string] $BridgeVersion     = "0.0.1-alpha"
-[string] $VSWhereVersion    = "2.0.2"
+[string] $BridgeVersion     = "0.0.3-alpha"
+[string] $FSIVersion        = "4.1.17"
 
 [string] $PSScriptRoot      = Split-Path $MyInvocation.MyCommand.Path -Parent
 [string] $ToolsPath         = Join-Path $PSScriptRoot "tools"
 [string] $CakeCorePath      = Join-Path $ToolsPath "Cake.Core.$CakeVersion/lib/net45/Cake.Core.dll"
 [string] $CakeCommonPath    = Join-Path $ToolsPath "Cake.Common.$CakeVersion/lib/net45/Cake.Common.dll"
 [string] $CakeBridgePath    = Join-Path $ToolsPath "Cake.Bridge.$BridgeVersion/lib/net45/Cake.Bridge.dll"
-[string] $VSWherePath       = Join-Path $ToolsPath "vswhere.$VSWhereVersion/tools/vswhere.exe"
+[string] $FSIPath           = Join-Path $ToolsPath "FSharp.Compiler.Tools.$FSIVersion/tools/fsi.exe"
 
 if (!(Test-Path $ToolsPath))
 {
@@ -49,22 +49,15 @@ if (!(Test-Path $CakeBridgePath))
    NugetInstall 'Cake.Bridge' $BridgeVersion $ToolsPath
 }
 
-if (!(Test-Path $VSWherePath))
+
+if (!(Test-Path $FSIPath))
 {
-   NugetInstall 'vswhere' $VSWhereVersion $ToolsPath
+   NugetInstall 'FSharp.Compiler.Tools' $FSIVersion $ToolsPath
 }
 
-
-$ids                        = 'Community', 'Professional', 'Enterprise', 'BuildTools' | ForEach { 'Microsoft.VisualStudio.Product.' + $_ }
-$instance                   = &$VSWherePath -latest -products $ids -requires 'Microsoft.Component.MSBuild' -format json `
-                                | ConvertFrom-Json `
-                                | Select-Object -First 1
-
-[string] $CSIPath           = join-path $instance.installationPath 'MSBuild\15.0\Bin\Roslyn\csi.exe'
-
-if (!(test-path $CSIPath)) {
+if (!(test-path $FSIPath)) {
   exit 404
 }
 
-&$CSIPath .\build.csx $args
+&$FSIPath .\build.fsx $args
 exit $LASTEXITCODE
