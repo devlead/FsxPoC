@@ -1,4 +1,4 @@
-#load "tools/Cake.Bridge.0.0.3-alpha/content/cake.fsx"
+#load "tools/Cake.Bridge.0.0.4-alpha/content/cake.fsx"
 
 //////////////////////////////////////////////////////////////////////
 // NAMESPACE IMPORTS
